@@ -178,7 +178,7 @@ st.markdown("""
 def load_model():
     """Load the trained model"""
     try:
-        model = tf.keras.models.load_model('waste_sorting_model_compatible.h5', compile=False)
+        model = tf.keras.models.load_model('waste_sorting_model.keras')
         return model
     except Exception as e:
         st.error(f"Error loading model: {e}")
