@@ -178,7 +178,7 @@ st.markdown("""
 def load_model():
     """Load the trained model"""
     try:
-        model = tf.keras.models.load_model('waste_sorting_model.keras')
+        model = tf.saved_model.load('waste_model_saved')
         return model
     except Exception as e:
         st.error(f"Error loading model: {e}")
@@ -190,21 +190,28 @@ def classify_image(image, model):
         # Resize and preprocess
         img = image.resize((224, 224))
         img_array = np.array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
+        img_array = np.expand_dims(img_array, axis=0).astype('float32')
+        
+        # Convert to tensor
+        input_tensor = tf.constant(img_array)
         
         # Predict
-        predictions = model.predict(img_array, verbose=0)[0]
+        predictions = model(input_tensor)
+        
+        # Get the output tensor and convert to numpy
+        output_key = list(predictions.keys())[0]
+        pred_array = predictions[output_key].numpy()[0]
         
         # Get results
         classes = ['Compost', 'Recycle', 'Landfill']
         emojis = ['🍌', '♻️', '🗑️']
         
         results = []
-        for i, (cls, emoji, pred) in enumerate(zip(classes, emojis, predictions)):
+        for i, (cls, emoji, pred) in enumerate(zip(classes, emojis, pred_array)):
             results.append({
                 'emoji': emoji,
                 'class': cls,
-                'confidence': pred
+                'confidence': float(pred)
             })
         
         # Sort by confidence
