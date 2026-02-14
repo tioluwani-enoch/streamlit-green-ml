@@ -178,8 +178,10 @@ st.markdown("""
 def load_model():
     """Load the trained model"""
     try:
-        model = tf.saved_model.load('waste_model_saved')
-        return model
+        # Load SavedModel
+        loaded = tf.saved_model.load('waste_model_saved')
+        return loaded
+        
     except Exception as e:
         st.error(f"Error loading model: {e}")
         return None
@@ -195,10 +197,16 @@ def classify_image(image, model):
         # Convert to tensor
         input_tensor = tf.constant(img_array)
         
-        # Predict
-        predictions = model(input_tensor)
+        # Get the inference function
+        infer = model.signatures['serving_default']
         
-        # Get the output tensor and convert to numpy
+        # Get input name (usually the first key)
+        input_name = list(infer.structured_input_signature[1].keys())[0]
+        
+        # Predict
+        predictions = infer(**{input_name: input_tensor})
+        
+        # Get the output
         output_key = list(predictions.keys())[0]
         pred_array = predictions[output_key].numpy()[0]
         
@@ -221,6 +229,7 @@ def classify_image(image, model):
         
     except Exception as e:
         st.error(f"Error during classification: {e}")
+        print(f"Full error: {e}")  # Debug
         return None
 
 # Main app
