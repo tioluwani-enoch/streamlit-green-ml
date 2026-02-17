@@ -110,9 +110,10 @@ st.markdown("""
     }
     
     /* Category cards */
-    .category-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+    .category-flex {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 1rem;
         margin: 2rem 0;
     }
@@ -300,22 +301,19 @@ def main():
     
     # Category info
     st.markdown("---")
-    st.markdown("""
-    <div class="category-grid">
-        <div class="category-card compost">
-            <h3>🍌 Compost</h3>
-            <p>Food scraps, yard waste, organics</p>
-        </div>
-        <div class="category-card recycle">
-            <h3>♻️ Recycle</h3>
-            <p>Paper, plastic, metal, glass</p>
-        </div>
-        <div class="category-card landfill">
-            <h3>🗑️ Landfill</h3>
-            <p>Mixed waste, non-recyclables</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.image("images/recycling-with-signs.png", use_container_width=True)
+    with col2:
+        st.image("images/landfill-with-signs.png", use_container_width=True)
+    with col3:
+        st.markdown("<div style='display:flex; align-items:center; height:100%;'>", unsafe_allow_html=True)
+        st.image("images/compost-with-signs.png", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # More Information about categories
+    with st.expander("📚 Learn More About Waste Categories"):
+        st.image("images/three-way-waste-system.png", use_container_width=True)
     
     # Tips
     with st.expander("💡 Tips for Best Results"):
